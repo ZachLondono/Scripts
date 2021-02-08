@@ -1,0 +1,21 @@
+#!/bin/bash
+cmd=(dialog --keep-tite --menu "Select options:" 22 76 16)
+
+options=()
+var=0
+while IFS= read -r line; do
+    var=$((var+1))
+    options+=($var "$line" )
+done < <( (pacmd list-sinks | grep name: |  perl -lanF"[<>]" -e 'print $F[1]') )
+
+choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
+
+#if [ -z "$choices"] # TODO: if choices is empty, don't try to set the sink
+#then 
+#	exit
+#fi
+
+i=$(((2*${choices})-1))
+line=${options[${i}]}
+
+pacmd set-default-sink ${line}
