@@ -1,18 +1,23 @@
 #!/bin/bash
 
+# File where bookmarks are stored
 Bookmarks=~/Documents/bookmarks
 
+# Read in all entries from bookmarks file
 lines=$(cat $Bookmarks | tr "|" "\n")
 
+# Load entries into an array
 readarray -t array <<<"$lines"
 
-
+# Separate entries into URLs and aliases
 readarray -t urls < <(echo "$lines" | sed '1~2d')
 readarray -t names < <(echo "$lines" | sed '0~2d')
 
+# Convert names into a string to be passed into rofi
 var=$( IFS=$'\n'; echo "${names[*]}" )
 output=$(echo "$var" | rofi -dmenu -p "Search")
 
+# find the corresponding URL for the given name
 for i in "${!names[@]}"; do
    if [[ "${names[$i]}" = "${output}" ]]; then
        firefox "${urls[$i]}"
