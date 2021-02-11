@@ -1,0 +1,7 @@
+#!/bin/bash
+
+query=$@
+
+echo "$query" >> ~/.cache/rofi/rofi_search_history
+
+echo $query | xargs -I{} xdg-open https://www.google.com/search?q={}
