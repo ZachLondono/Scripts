@@ -5,7 +5,7 @@ class Sink:
 		self.index = 0
 		self.name = ""
 		self.device = ""
-		self.isSelected = True
+		self.isSelected = False
 
 
 out = os.popen('pacmd list-sinks').read()
@@ -23,9 +23,11 @@ for line in lines:
 		sinks.append(curr_sink)
 		index = line.split("index: ")[1]
 		curr_sink.index = int(index, base=10)
+		if "*" in line:
+			curr_sink.isSelected = True
 
 	if "name: <" in line :
-		curr_sink.name = line.split("name: <")[1][0:-1]
+		curr_sink.name = line.split("name: <")[1][0:]
 
 	if "device.description" in line :
 		curr_sink.device = line.split("device.description = ")[1]
@@ -33,7 +35,9 @@ for line in lines:
 options = ""
 length = len(sinks)
 for i in range(length):
-	option = " {0} {1}".format(i, sinks[i].device)
+	name = sinks[i].device
+	if sinks[i].isSelected: name = "\"* " +name[1:]
+	option = " {0} {1}".format(i, name)
 	options += option
 
 dialog = 'dialog --stdout --keep-tite --menu \"Choose Audio Sink\" 0 0 0'
